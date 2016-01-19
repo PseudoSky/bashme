@@ -1,0 +1,73 @@
+#!/usr/bin/env node
+
+
+var outp=require('../lib/output-formats.js');
+var FSON=outp['json'].stringify.withConfig({color: true});
+var SON=outp['text'].stringify;
+var program = require('commander');
+var colors = require('colors');
+
+var sys = require('sys');
+var path = require('path');
+var exec = require('child_process').exec;
+var child;
+
+
+var Finder = require('fs-finder');
+var jsonfile = require('jsonfile')
+var _ = require('lodash');
+
+
+
+var res={};
+program
+  .version('0.0.8')
+  .command('[term] [directory]','Search for files with simple terms, remember to escape \*\'s')
+  // .description('Ip address to geolocate IPV4 or IPV6, find locations of all the comma separated ips')
+  .action(function(term, directory){
+
+	  if (!term || term=="") {
+	    program.outputHelp("rembash <search term> <path to search>");
+	    return null;
+	  }
+	  directory= (!_.isString(directory) || directory=="" ) ? __dirname.toString() : directory;
+    term = term.trim().split(',');
+    _.map(term,function(e){return find_from(e.trim(),directory);});
+
+  }).parse(process.argv);
+
+
+function find_from(search,directory){
+	// directory=directory||path.join(__dirname,'');
+	Finder.from(directory).findFiles(search, function(files) {
+		console.log(' Searching: \t\t'+directory+'\n',"For Search Term: \t"+search+"\n");
+		 console.log('\nThe Files Found Are:\n\n',SON(files));
+
+		 _.map(files, function(f){
+		 	nm=_.last(f.split('/'));
+		 	if(res[nm])res[nm].count+=1;
+		 	else res[nm]={name:nm,count:1,paths:[]};	 
+		 	res[nm].paths.push(f)
+		 });
+		 console.log(FSON(_.orderBy(_.values(res), ['count', 'name'], ['desc', 'asc'])));
+		// Write to the JSONSchema.json file (with indentation)
+		
+	});
+}
+
+ 
+
+
+// // executes `pwd`
+// child = exec("pwd", function (error, stdout, stderr) {
+//   sys.print('stdout: ' + stdout);
+//   sys.print('stderr: ' + stderr);
+//   if (error !== null) {
+//     console.log('exec error: ' + error);
+//   }
+// });
+// // or more concisely
+// var sys = require('sys')
+// var exec = require('child_process').exec;
+// function puts(error, stdout, stderr) { sys.puts(stdout) }
+// exec("ls -la", puts);

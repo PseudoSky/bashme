@@ -1,0 +1,125 @@
+#!/usr/bin/env node
+
+var geo=require('../lib/geoip');
+var program = require('commander');
+var colors = require('colors');
+var _=require('lodash');
+
+var outp=require('../lib/output-formats.js');
+var FSON=outp['json'].stringify.withConfig({color: true});
+
+program
+  .version('0.0.4')
+  .usage('[ips]',"Ip addresses")
+  .description('Ip address to geolocate IPV4 or IPV6, find locations of all the comma separated ips')
+  .action(function(ips){
+	  if (!ips || ips=="") {
+	    program.outputHelp(make_red);
+	    return null;
+	  }
+    ips = ips.trim().split(',');
+    console.log(FSON(_.map(ips,function(e){return geo.lookup(e.trim());})));
+    // console.log('setup for %s env(s) with %s mode', ips, mode);
+  }).parse(process.argv);
+// program.parse(process.argv);
+
+// ./geo 65.17.145.4
+// ./geo 176.109.61.13
+// ./geo 52.23.252.252
+// ./geo 161.123.209.66
+// ./geo 192.220.1.87
+// ./geo 177.93.211.103
+// ./geo 95.143.221.182
+// ./geo 27.152.87.241
+// ./geo 181.232.206.166
+// ./geo 80.39.131.103
+// ./geo 67.167.173.113
+
+// ./geo 177.93.211.103,95.143.221.182,27.152.87.241,181.232.206.166,80.39.131.103,67.167.173.113
+
+// [
+//   {
+//     "range": [
+//       2975715840,
+//       2975723775
+//     ],
+//     "country": "BR",
+//     "region": "",
+//     "city": "",
+//     "ll": [
+//       -23.5477,
+//       -46.6358
+//     ],
+//     "metro": 0
+//   },
+//   {
+//     "range": [
+//       1603263744,
+//       1603264127
+//     ],
+//     "country": "RU",
+//     "region": "",
+//     "city": "",
+//     "ll": [
+//       55.75,
+//       37.6166
+//     ],
+//     "metro": 0
+//   },
+//   {
+//     "range": [
+//       462946304,
+//       462979071
+//     ],
+//     "country": "CN",
+//     "region": "07",
+//     "city": "Quanzhou",
+//     "ll": [
+//       24.9139,
+//       118.5858
+//     ],
+//     "metro": 0
+//   },
+//   {
+//     "range": [
+//       3051913216,
+//       3051949311
+//     ],
+//     "country": "CR",
+//     "region": "04",
+//     "city": "Heredia",
+//     "ll": [
+//       10.0024,
+//       -84.1165
+//     ],
+//     "metro": 0
+//   },
+//   {
+//     "range": [
+//       1344766720,
+//       1344766975
+//     ],
+//     "country": "ES",
+//     "region": "56",
+//     "city": "Badalona",
+//     "ll": [
+//       41.45,
+//       2.2474
+//     ],
+//     "metro": 0
+//   },
+//   {
+//     "range": [
+//       1135062272,
+//       1135062399
+//     ],
+//     "country": "US",
+//     "region": "TN",
+//     "city": "Harrison",
+//     "ll": [
+//       35.2472,
+//       -85.0693
+//     ],
+//     "metro": 575
+//   }
+// ]
