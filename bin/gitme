@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Work in progress
+# 	Take notes on changes made in a commit for each file
+
+gitme(){
+	E='[]';
+	files=`git diff -1 -z --name-only | xargs -n 1 -0 echo`
+	commit_hash=`git log --pretty=format:"%h" -n 1`
+	date_stamp=`date`
+
+	echo "" >>.note;
+
+	echo "{ name: \"New Commit\", hash: \"$commit_hash\", ts: \"$date_stamp\" }" >>.note;
+	echo "***************************************************************************" >>.note;
+	for f in $files;
+	do 
+		echo "Note for: $f";
+		read note;
+
+		underscore run -d "${E}" "data=data||[];data.push({ \"name\": \"$f\",\"message\":\"$note\" });console.log(data[0]);" >>.note;
+	done
+}
+
+export -f gitme
