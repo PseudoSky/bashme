@@ -1,6 +1,6 @@
 # Geo IP
 
-
+Added support for multi IP queries, results now contain the matching IP address
 
 # GitMe Commit Notes
 
